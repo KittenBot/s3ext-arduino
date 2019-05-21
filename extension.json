@@ -1,0 +1,30 @@
+{
+    "name": "Arduino",
+    "type": "arduino",
+    "extensions": ["Arduino", "Sensors", "Display", "Actuator"],
+    "board": {
+        "UNO": {
+            "cmd": "arduino:avr:uno",
+            "baud": 115200
+        },
+        "Nano328P": {
+            "cmd": "arduino:avr:nano:cpu=atmega328",
+            "baud": 57600
+        },
+        "PRO": {
+            "cmd": "arduino:avr:nano:cpu=atmega328",
+            "baud": 57600
+        },
+        "Meag2560": {
+            "cmd": "arduino:avr:mega:cpu=atmega2560",
+            "baud": 115200,
+            "protocol": "atmega2560"
+        },
+        "LGT": {
+            "cmd": "LGT:avr:lardu_328p48",
+            "baud": 57600
+        }
+    },
+    "image": "arduino.png",
+    "example": "Arduino"
+}
