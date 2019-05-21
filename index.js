@@ -1,12 +1,40 @@
 /**
  * Created by Riven on 2017/9/25 0025.
  */
+const Firmata = require('./firmata.js');
+const Emitter = require("events");
 
 const ArgumentType = Scratch.ArgumentType;
 const BlockType = Scratch.BlockType;
 const formatMessage = Scratch.formatMessage;
 const log = Scratch.log;
 
+class TransportStub extends Emitter {
+  constructor(path/*, options, openCallback*/) {
+    super();
+    this.isOpen = true;
+    this.baudRate = 0;
+    this.path = path;
+  }
+
+  write(buffer) {
+    // Tests are written to work with arrays not buffers
+    // this shouldn't impact the data, just the container
+    // This also should be changed in future test rewrites
+    /* istanbul ignore else */
+    if (Buffer.isBuffer(buffer)) {
+      buffer = Array.from(buffer);
+    }
+
+    this.lastWrite = buffer;
+    this.emit("write", buffer);
+  }
+
+  static list() {
+    /* istanbul ignore next */
+    return Promise.resolve([]);
+  }
+}
 
 const wireCommon = gen => {
     gen.setupCodes_['wire'] = `Wire.begin()`;
@@ -25,6 +53,9 @@ class ArduinoExtension {
 
         this.decoder = new TextDecoder();
         this.lineBuffer = '';
+        const firmata = new Firmata();
+        this.trans = new TransportStub();
+        this.board = new firmata.Board(this.trans);
     }
 
     write (data){
