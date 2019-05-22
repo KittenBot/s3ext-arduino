@@ -665,20 +665,6 @@ class ArduinoExtension {
         });
     }
 
-    ultrasonic (args){
-        const pin = pin2firmata(args.PIN);
-        return new Promise(resolve => {
-            pingRead({
-                pin,
-                value: board.HIGH,
-                pulseOut: 5,
-            }, ms => {
-                ms = ms || 0;
-                resolve(ms.toFixed(2));
-            });
-        });
-    }
-
     mapping (args){
         const x = args.VAL;
         const in_min = args.FROMLOW;
