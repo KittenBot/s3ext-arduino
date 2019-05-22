@@ -42,6 +42,15 @@ const wireCommon = gen => {
     gen.includes_['wire'] = '#include <Wire.h>\n';
 };
 
+const pin2firmata = pin => {
+    if (pin.startsWith('A')){
+        pin = parseInt(pin[1], 10)+14; // A0 starts with 14
+    } else {
+        pin = parseInt(pin, 10);
+    }
+    return pin;
+}
+
 class ArduinoExtension {
     constructor (runtime){
         this.runtime = runtime;
@@ -613,32 +622,55 @@ class ArduinoExtension {
     }
 
     noop (){
-
+        return Promise.reject("Unsupport block in online mode")
     }
 
 
     pinMode (args){
-
+        const pin = args.PIN;
+        const mode = args.MODE;
+        const mode2firmata = {
+            '0': board.MODES.INPUT,
+            '1': board.MODES.OUTPUT,
+            '2': board.MODES.PULLUP,
+        }
+        board.pinMode(pin2firmata(pin), mode2firmata[mode]);
     }
 
     digitalWrite (args){
-
+        const pin = args.PIN;
+        const value = parseInt(args.VALUE, 10);
+        board.pinMode(pin2firmata(pin), value ? 1 : 0);
     }
 
     led (args){
-
+        const pin = args.PIN;
+        const value = parseInt(args.VALUE, 10);
+        board.pinMode(pin2firmata(pin), value ? 0 : 1); // inverse for kittenbot's led module
     }
 
     analogWrite (args){
-
+        const pin = args.PIN;
+        const v = parseInt(args.VALUE, 10);
+        board.analogWrite(pin2firmata(pin),v)
     }
 
     digitalRead (args) {
-
+        const pin = args.PIN;
+        return new Promise(resolve => {
+            board.digitalRead(pin2firmata(pin), ret => {
+                resolve(ret);
+            })
+        });
     }
 
     analogRead (args){
-
+        const pin = args.PIN;
+        return new Promise(resolve => {
+            board.analogRead(pin2firmata(pin), ret => {
+                resolve(ret);
+            })
+        });
     }
 
     ultrasonic (args){
