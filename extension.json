@@ -2,23 +2,28 @@
     "name": "Arduino",
     "type": "arduino",
     "extensions": ["Arduino", "Sensors", "Display", "Actuator"],
+    "factory": "arduinolib/Firmata/examples/StandardFirmata/StandardFirmata.ino",
     "board": {
         "UNO": {
             "cmd": "arduino:avr:uno",
-            "baud": 115200
+            "baud": 115200,
+            "hex": "StandardFirmata.uno.hex"
         },
         "Nano328P": {
             "cmd": "arduino:avr:nano:cpu=atmega328",
-            "baud": 57600
+            "baud": 57600,
+            "hex": "StandardFirmata.uno.hex"
         },
         "PRO": {
             "cmd": "arduino:avr:nano:cpu=atmega328",
-            "baud": 57600
+            "baud": 57600,
+            "hex": "StandardFirmata.uno.hex"
         },
         "Meag2560": {
             "cmd": "arduino:avr:mega:cpu=atmega2560",
             "baud": 115200,
-            "protocol": "atmega2560"
+            "protocol": "atmega2560",
+            "hex": "StandardFirmata.mega2560.hex"
         },
         "LGT": {
             "cmd": "LGT:avr:lardu_328p48",
