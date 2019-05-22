@@ -70,16 +70,8 @@ class ArduinoExtension {
         this.trans.on("write", data => {
             if (this.session) this.session.write(data);
         });
-    }
-
-    write (data){
-        if (this.session) this.session.write(data);
-    }
-
-    report (data){
-        return new Promise(resolve => {
-            this.write(data);
-            this.reporter = resolve;
+        this.board.on('ready', ()=>{
+            console.log("Firmata ready");
         });
     }
 
@@ -536,9 +528,9 @@ class ArduinoExtension {
                             defaultValue: '0x12'
                         }
                     },
-                    func: 'noop',
+                    func: 'wireBegin',
                     gen: {
-                        arduino: this.wireBegin
+                        arduino: this.wireBeginGen
                     }
                 },
                 {
@@ -554,9 +546,9 @@ class ArduinoExtension {
                             defaultValue: 'abc'
                         }
                     },
-                    func: 'noop',
+                    func: 'wireWrite',
                     gen: {
-                        arduino: this.wireWrite
+                        arduino: this.wireWriteGen
                     }
                 },
                 {
@@ -576,9 +568,9 @@ class ArduinoExtension {
                             defaultValue: 6
                         }
                     },
-                    func: 'noop',
+                    func: 'wireRead',
                     gen: {
-                        arduino: this.wireRead
+                        arduino: this.wireReadGen
                     }
                 },
                 {
@@ -588,9 +580,9 @@ class ArduinoExtension {
                         id: 'arduino.wireEnd',
                         default: 'Wire End'
                     }),
-                    func: 'noop',
+                    func: 'wireEnd',
                     gen: {
-                        arduino: this.wireEnd
+                        arduino: this.wireEndGen
                     }
                 },
                 {
@@ -602,7 +594,7 @@ class ArduinoExtension {
                     }),
                     func: 'noop',
                     gen: {
-                        arduino: this.wireEndRet
+                        arduino: this.wireEndRetGen
                     }
                 },
             ],
@@ -674,7 +666,17 @@ class ArduinoExtension {
     }
 
     ultrasonic (args){
-
+        const pin = pin2firmata(args.PIN);
+        return new Promise(resolve => {
+            pingRead({
+                pin,
+                value: board.HIGH,
+                pulseOut: 5,
+            }, ms => {
+                ms = ms || 0;
+                resolve(ms.toFixed(2));
+            });
+        });
     }
 
     mapping (args){
@@ -708,26 +710,51 @@ while (${sertype}.available()) {
         return code;
     }
 
-    wireBegin (gen, block){
+    wireBegin (args){
+        this.i2cAddr = parseInt(args.ADDR, 16);
+        board.i2cConfig();
+    }
+
+    wireBeginGen (gen, block){
         wireCommon(gen);
         const addr = gen.valueToCode(block, 'ADDR');
         return `Wire.beginTransmission(${addr})`;
     }
 
-    wireWrite (gen, block){
+    wireWrite (args){
+        const data = args.DATA;
+        board.i2cWrite(this.i2cAddr, data, data.length);
+    }
+
+    wireWriteGen (gen, block){
         const data = gen.valueToCode(block, 'DATA');
         return `Wire.write(${data})`;
     }
 
-    wireRead (gen, block){
+    wireRead (args){
+        const reg = parseInt(args.ADDR, 16);
+        const len = parseInt(args.LEN);
+        // board.i2cWrite(this.i2cAddr, data, data.length);
+        return new Promise(resolve => {
+            board.i2cReadOnce(this.i2cAddr, reg, len, ret => {
+                resolve(ret);
+            });
+        });
+    }
+
+    wireReadGen (gen, block){
         return ['Wire.read()', 0];
     }
 
-    wireEnd (gen, block){
+    wireEnd (){
+        board.i2cStop(this.i2cAddr);
+    }
+
+    wireEndGen (gen, block){
         return 'Wire.endTransmission()';
     }
 
-    wireEndRet (gen, block){
+    wireEndRetGen (gen, block){
         return ['Wire.endTransmission()', 0];
     }
 
