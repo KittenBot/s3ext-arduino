@@ -18,6 +18,7 @@ class TransportStub extends Emitter {
   }
 
   write(buffer) {
+    console.log("transport write", buffer);
     // Tests are written to work with arrays not buffers
     // this shouldn't impact the data, just the container
     // This also should be changed in future test rewrites
@@ -56,10 +57,13 @@ class ArduinoExtension {
         const firmata = new Firmata();
         this.trans = new TransportStub();
         this.board = new firmata.Board(this.trans);
+        window.board = this.board;
+        this.trans.on("write", data => {
+            if (this.session) this.session.write(data);
+        });
     }
 
     write (data){
-        if (!data.endsWith('\n')) data += '\n';
         if (this.session) this.session.write(data);
     }
 
@@ -71,16 +75,7 @@ class ArduinoExtension {
     }
 
     onmessage (data){
-        const dataStr = this.decoder.decode(data);
-        this.lineBuffer += dataStr;
-        if (this.lineBuffer.indexOf('\n') !== -1){
-            const lines = this.lineBuffer.split('\n');
-            this.lineBuffer = lines.pop();
-            for (const l of lines){
-                const ret = this.parseCmd(l);
-                if (this.reporter) this.reporter(ret);
-            }
-        }
+        this.board.transport.emit('data', data);
     }
 
     onclose (){
@@ -623,38 +618,31 @@ class ArduinoExtension {
 
 
     pinMode (args){
-        let cmd = `M1 ${pinMode[args.PIN]} ${pinMode[args.MODE]}\r\n`;
-        this.write(cmd);
+
     }
 
     digitalWrite (args){
-        let cmd = `M2 ${args.PIN} ${args.VALUE}\r\n`;
-        this.write(cmd);
+
     }
 
     led (args){
-        let cmd = `M2 ${args.PIN} ${args.VALUE}\r\n`;
-        this.write(cmd);
+
     }
 
     analogWrite (args){
-        let cmd = `M4 ${args.PIN} ${args.VALUE}\r\n`;
-        this.write(cmd);
+
     }
 
     digitalRead (args) {
-        let cmd = `M3 ${args.PIN}\r\n`;
-        return this.comm.report(cmd, util.targetid);
+
     }
 
     analogRead (args){
-        let cmd = `M5 ${args.PIN}\r\n`;
-        return this.comm.report(cmd, util.targetid);
+
     }
 
     ultrasonic (args){
-        let cmd = `M250 ${args.TRIG} ${args.ECHO}\r\n`;
-        return this.comm.report(cmd, util.targetid);
+
     }
 
     mapping (args){
@@ -666,18 +654,6 @@ class ArduinoExtension {
         return parseFloat(((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)).toFixed(2);
     }
 
-    parseCmd (msg){
-        let tmp = msg.trim().split(' ');
-        tmp = tmp.filter(n => { return n !== ''});
-        if (tmp[0].indexOf('M3') > -1){
-            return parseInt(tmp[2], 10);
-        } else if (tmp[0].indexOf('M5') > -1){
-            return parseInt(tmp[2], 10);
-        } else if (tmp[0].indexOf('M250') > -1){
-            return parseInt(tmp[1], 10);
-        }
-        return 0;
-    }
 
     wiretrans (gen, block){
         let branch = gen.statementToCode(block, 'SUBSTACK');
