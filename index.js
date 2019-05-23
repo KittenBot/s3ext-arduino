@@ -71,7 +71,13 @@ class ArduinoExtension {
             if (this.session) this.session.write(data);
         });
         this.board.on('ready', ()=>{
-            console.log("Firmata ready");
+            // cross extension usage
+            window.five = window.require('johnny-five');
+            window.j5board = new five.Board({
+                io: window.board,
+                debug: false,
+                repl: false
+            });
         });
     }
 
