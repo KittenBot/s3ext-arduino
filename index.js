@@ -67,17 +67,19 @@ class ArduinoExtension {
         this.trans = new TransportStub();
         this.board = new firmata.Board(this.trans);
         window.board = this.board;
+        window.five = window.require('johnny-five');
         this.trans.on("write", data => {
             if (this.session) this.session.write(data);
         });
         this.board.on('ready', ()=>{
             // cross extension usage
-            window.five = window.require('johnny-five');
-            window.j5board = new five.Board({
-                io: window.board,
-                debug: false,
-                repl: false
-            });
+            if (!window.j5board){
+                window.j5board = new five.Board({
+                    io: window.board,
+                    debug: false,
+                    repl: false
+                });
+            }
         });
     }
 
