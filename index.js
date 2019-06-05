@@ -42,9 +42,11 @@ const wireCommon = gen => {
     gen.includes_['wire'] = '#include <Wire.h>\n';
 };
 
-const pin2firmata = pin => {
+const pin2firmata = (pin, aidx) => {
     if (pin.startsWith('A')){
-        pin = parseInt(pin[1], 10)+14; // A0 starts with 14
+        // A0 starts with 14
+        pin = parseInt(pin[1], 10)+14;
+        if (aidx) pin-=14; // with buildin this.pins[this.analogPins[pin]]
     } else {
         pin = parseInt(pin, 10);
     }
@@ -66,6 +68,7 @@ class ArduinoExtension {
         const firmata = new Firmata();
         this.trans = new TransportStub();
         this.board = new firmata.Board(this.trans);
+        this.board.pin2firmata = pin2firmata;
         window.board = this.board;
         window.five = window.require('johnny-five');
         this.trans.on("write", data => {
@@ -657,6 +660,7 @@ class ArduinoExtension {
 
     digitalRead (args) {
         const pin = args.PIN;
+        // board.pinMode(pin2firmata(pin), board.MODES.INPUT);
         return new Promise(resolve => {
             board.digitalRead(pin2firmata(pin), ret => {
                 resolve(ret);
@@ -667,7 +671,7 @@ class ArduinoExtension {
     analogRead (args){
         const pin = args.PIN;
         return new Promise(resolve => {
-            board.analogRead(pin2firmata(pin), ret => {
+            board.analogRead(pin2firmata(pin,1), ret => {
                 resolve(ret);
             })
         });
