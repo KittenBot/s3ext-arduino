@@ -18,7 +18,7 @@ class TransportStub extends Emitter {
   }
 
   write(buffer) {
-    console.log("transport write", buffer);
+    // console.log("transport write", buffer);
     // Tests are written to work with arrays not buffers
     // this shouldn't impact the data, just the container
     // This also should be changed in future test rewrites
@@ -643,13 +643,13 @@ class ArduinoExtension {
     digitalWrite (args){
         const pin = args.PIN;
         const value = parseInt(args.VALUE, 10);
-        board.pinMode(pin2firmata(pin), value ? 1 : 0);
+        board.digitalWrite(pin2firmata(pin), value ? 1 : 0);
     }
 
     led (args){
         const pin = args.PIN;
         const value = parseInt(args.VALUE, 10);
-        board.pinMode(pin2firmata(pin), value ? 0 : 1); // inverse for kittenbot's led module
+        board.digitalWrite(pin2firmata(pin), value ? 0 : 1); // inverse for kittenbot's led module
     }
 
     analogWrite (args){
