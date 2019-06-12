@@ -214,7 +214,7 @@ class ArduinoExtension {
                             defaultValue: 115200
                         }
                     },
-                    func: 'noop',
+                    func: 'serialbegin',
                     sepafter: 36
                 },
                 {
@@ -625,7 +625,14 @@ class ArduinoExtension {
     }
 
     noop (){
-        return Promise.reject("Unsupport block in online mode")
+        return Promise.reject(formatMessage({
+            id: 'kblock.notify.nosupportonlinemode',
+            defaultMessage: 'Not support in online mode'
+        }));
+    }
+    
+    serialbegin (){
+        // just a fake empty function
     }
 
 
