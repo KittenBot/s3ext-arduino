@@ -23,6 +23,7 @@
             "cmd": "arduino:avr:mega:cpu=atmega2560",
             "baud": 115200,
             "protocol": "atmega2560",
+            "programmer": "wiring",
             "hex": "kblockfirmata.ino.mega.hex"
         },
         "LGT": {
