@@ -7,24 +7,24 @@
         "UNO": {
             "cmd": "arduino:avr:uno",
             "baud": 115200,
-            "hex": "kblockfirmata.ino.standard.hex"
+            "hex": "kblockfirmata.ino.hex"
         },
         "Nano328P": {
             "cmd": "arduino:avr:nano:cpu=atmega328",
             "baud": 57600,
-            "hex": "kblockfirmata.ino.standard.hex"
+            "hex": "kblockfirmata.ino.hex"
         },
         "PRO": {
             "cmd": "arduino:avr:nano:cpu=atmega328",
             "baud": 57600,
-            "hex": "kblockfirmata.ino.standard.hex"
+            "hex": "kblockfirmata.ino.hex"
         },
         "Meag2560": {
             "cmd": "arduino:avr:mega:cpu=atmega2560",
             "baud": 115200,
             "protocol": "atmega2560",
             "programmer": "wiring",
-            "hex": "kblockfirmata.ino.mega.hex"
+            "hex": "kblockfirmata.mega.hex"
         },
         "LGT": {
             "cmd": "LGT:avr:lardu_328p48",
