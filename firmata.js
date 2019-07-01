@@ -1732,6 +1732,9 @@ class Firmata extends Emitter {
   reportAnalogPin(pin, value) {
     /* istanbul ignore else */
     if (value === 0 || value === 1) {
+      if (value === 0) {
+        this.removeAllListeners("analog-read-" + pin);
+      }
       this.pins[this.analogPins[pin]].report = value;
       writeToTransport(this, [
         REPORT_ANALOG | pin,
@@ -1750,6 +1753,9 @@ class Firmata extends Emitter {
     const port = pin >> 3;
     /* istanbul ignore else */
     if (value === 0 || value === 1) {
+      if (value === 0) {
+        this.removeAllListeners("digital-read-" + pin);
+      }
       this.pins[pin].report = value;
       writeToTransport(this, [
         REPORT_DIGITAL | port,

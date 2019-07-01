@@ -668,8 +668,10 @@ class ArduinoExtension {
     digitalRead (args) {
         const pin = args.PIN;
         // board.pinMode(pin2firmata(pin), board.MODES.INPUT);
+        const pinId = pin2firmata(pin);
         return new Promise(resolve => {
-            board.digitalRead(pin2firmata(pin), ret => {
+            board.digitalRead(pinId, ret => {
+                board.reportDigitalPin(pinId, 0);
                 resolve(ret);
             })
         });
@@ -677,8 +679,10 @@ class ArduinoExtension {
 
     analogRead (args){
         const pin = args.PIN;
+        const pinId = pin2firmata(pin,1);
         return new Promise(resolve => {
-            board.analogRead(pin2firmata(pin,1), ret => {
+            board.analogRead(pinId, ret => {
+                board.reportAnalogPin(pinId, 0);
                 resolve(ret);
             })
         });
