@@ -610,7 +610,11 @@ class ArduinoExtension {
                 },
             ],
             menus: {
-                pinMode: [{text:'INPUT', value: '0'}, {text: 'OUTPUT', value: '1'}, {text: 'INPUT_PULLUP', value: '2'}],
+                pinMode: [
+                    {text:'INPUT', value: '0'},
+                    {text: 'OUTPUT', value: '1'},
+                    {text: 'INPUT_PULLUP', value: '2'}
+                ],
                 level: [{text: 'HIGH', value: '1'}, {text: 'LOW', value: '0'}],
                 onoff: [{text: 'ON', value: '0'}, {text: 'OFF', value: '1'}],
                 digiPin: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
@@ -642,15 +646,16 @@ class ArduinoExtension {
         const mode2firmata = {
             '0': board.MODES.INPUT,
             '1': board.MODES.OUTPUT,
-            '2': board.MODES.PULLUP,
+            '2': board.MODES.PULLUP
         }
         board.pinMode(pin2firmata(pin), mode2firmata[mode]);
     }
 
     digitalWrite (args){
         const pin = args.PIN;
-        const value = parseInt(args.VALUE, 10);
-        board.digitalWrite(pin2firmata(pin), value ? 1 : 0);
+        const pinId = pin2firmata(pin);
+        const value = parseInt(args.VALUE, 10);        
+        board.digitalWrite(pinId, value ? 1 : 0);
     }
 
     led (args){
@@ -662,19 +667,29 @@ class ArduinoExtension {
     analogWrite (args){
         const pin = args.PIN;
         const v = parseInt(args.VALUE, 10);
-        board.analogWrite(pin2firmata(pin),v)
+        const pinId = pin2firmata(pin);
+        const p = board.pins[pinId];
+        if (p.mode !== 3){
+            board.pinMode(pinId, 3);
+        }
+        board.analogWrite(pinId,v)
     }
 
     digitalRead (args) {
         const pin = args.PIN;
         // board.pinMode(pin2firmata(pin), board.MODES.INPUT);
         const pinId = pin2firmata(pin);
-        return new Promise(resolve => {
+        const p = board.pins[pinId];
+        if (p.mode === undefined){
+            vm.emit('showAlert', {msg: 'PinMode Undefined'});
+            return;
+        }
+        if (board.eventNames().indexOf(`digital-read-${pinId}`) === -1){
             board.digitalRead(pinId, ret => {
-                board.reportDigitalPin(pinId, 0);
-                resolve(ret);
-            })
-        });
+                // board.reportDigitalPin(pinId, 0);
+            });
+        }
+        return p.value;
     }
 
     analogRead (args){
