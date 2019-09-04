@@ -767,7 +767,19 @@ while (${sertype}.available()) {
     }
 
     wireReadGen (gen, block){
-        return ['Wire.read()', 0];
+        gen.functions_['wireread'] = `\nString wireRead(int addr, int len){
+    String ret = "";
+    Wire.requestFrom(2, 6);
+
+    while(Wire.available()){ 
+        char c = Wire.read();
+        ret += c;
+    }
+    return ret;
+}\n`
+        const addr = gen.valueToCode(block, 'ADDR');
+        const len = gen.valueToCode(block, 'LEN');
+        return [`wireRead(${addr},${len})`, 0];
     }
 
     wireEnd (){
