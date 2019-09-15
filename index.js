@@ -146,6 +146,11 @@ class ArduinoExtension {
                     func: 'noop'
                 },
                 {
+                    func: 'noop',
+                    blockType: BlockType.DIVLABEL,
+                    text: 'Serial'
+                },
+                {
                     opcode: 'serialreadline',
                     blockType: BlockType.CONDITIONAL,
 
@@ -312,7 +317,11 @@ class ArduinoExtension {
                     },
                     func: 'noop'
                 },
-                '---',
+                {
+                    func: 'noop',
+                    blockType: BlockType.DIVLABEL,
+                    text: 'GPIO'
+                },
                 {
                     opcode: 'pinmode',
                     blockType: BlockType.COMMAND,
@@ -525,7 +534,11 @@ class ArduinoExtension {
                         arduino: this.typecast
                     }
                 },
-                '---',
+                {
+                    func: 'noop',
+                    blockType: BlockType.DIVLABEL,
+                    text: 'I2C'
+                },
                 {
                     opcode: 'wireBegin',
                     blockType: BlockType.COMMAND,
@@ -769,7 +782,7 @@ while (${sertype}.available()) {
     wireReadGen (gen, block){
         gen.functions_['wireread'] = `\nString wireRead(int addr, int len){
     String ret = "";
-    Wire.requestFrom(2, 6);
+    Wire.requestFrom(addr, len);
 
     while(Wire.available()){ 
         char c = Wire.read();
