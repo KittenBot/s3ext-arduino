@@ -474,6 +474,7 @@ class ArduinoExtension {
                             defaultValue: 1024
                         }
                     },
+                    hideFromPalette: true, // replaced by math mapping
                     func: 'mapping'
                 },
                 {
