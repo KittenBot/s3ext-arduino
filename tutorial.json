@@ -1,0 +1,37 @@
+{
+    "id": "arduino-tutorial",
+    "name": "Arduino start",
+    "img": "arduino.png",
+    "tags": ["robot", "hardware", "kittenblock"],
+    "steps": [
+        {
+            "title": "01插上Arduino",
+            "image": "01.png"
+        },
+        {
+            "title": "02安装驱动",
+            "image": "02.gif"
+        },
+        {
+            "title": "03选择硬件",
+            "image": "03.gif"
+        },
+        {
+            "title": "04选择串口恢复固件",
+            "image": "04.gif"
+        },
+        {
+            "title": "05在线控制",
+            "image": "05.gif"
+        },
+        {
+            "title": "06闪烁现象",
+            "image": "06.gif"
+        },
+        {
+            "title": "07实现脱机下载",
+            "image": "07.gif"
+        }
+    ]
+
+}

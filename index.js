@@ -84,6 +84,12 @@ class ArduinoExtension {
                 });
             }
         });
+
+        const viewedTutorial = localStorage.getItem("showed-arduino-tutorial")
+        if (!viewedTutorial){
+            runtime.showDeck('arduino-tutorial');
+            localStorage.setItem("showed-arduino-tutorial", 1);
+        }
     }
 
     onmessage (data){
